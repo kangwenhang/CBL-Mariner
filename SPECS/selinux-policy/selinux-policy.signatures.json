@@ -1,6 +1,22 @@
 {
  "Signatures": {
-  "refpolicy-2.20200818.tar.bz2": "1488f9b94060de28addbcb29fb8437ee0d75cba15e11280dd9dfa3e09986f57b",
-  "Makefile.devel": "cd065e896d7eb11e238a05b9102359ea370ec75b27785a81935c985899ed2df6"
+  "refpolicy-2.20210203.tar.bz2": "48cbf2c63ff9003bef05e03c8d3cdddb4e8f63fef2a072ae51c987301f0b874d",
+  "Makefile.devel": "cd065e896d7eb11e238a05b9102359ea370ec75b27785a81935c985899ed2df6",
+  "0001-various-systemd-user-fixes-and-additional-support.patch": "79574b5170d240cb9bae01b4358a3cf9d849f7ab8c05bfb70910ffed126fffcd",
+  "0002-Allow-use-of-systemd-UNIX-sockets-created-at-initrd-.patch": "b1de6c89aba4e0e830649041476bdded7f3539edd51d1d8f4f11131321e71c4a",
+  "0003-files-init-systemd-various-fixes.patch": "1d024b32ce58dd8344c28855a4f81de5cf7ec3e63b6d0e790f2b2a7ac128a810",
+  "0004-Enable-factory-directory-support-in-systemd-tmpfiles.patch": "4ca26cb7f3340d741b52a289e7a52ef6bf05b2a43fedfef3f2d50b9dbd5b598a",
+  "0005-Makefile-Revise-relabel-targets-to-relabel-all-secla.patch": "c9541b568a2249b2ae30bf9910c52cac8bbda33947ecba7acaa941568e14f4b0",
+  "0006-cronyd-Add-dac_read_search.patch": "eb78767ea07ee160834815d5246e529a8693c497f8c3663459d98255275b8f15",
+  "0007-systemd-ssh-ntp-Read-fips_enabled-crypto-sysctl.patch": "502f8c53246624419fc601cb7669c82d165a4037f8db15d4ea9b6dad68cd6191",
+  "0008-udev-Manage-EFI-variables.patch": "3404e16674c34e85e1dba5a486738831fde93848c994c347f3a5176ea3996106",
+  "0009-ntp-Handle-symlink-to-drift-directory.patch": "61bfa171d7b965b727797c568e9130aa8f41abf8dcb2847252a081a538956dc5",
+  "0010-systemd-Unit-generator-fixes.patch": "0a3b03dda9d3d518b780f1b7a283367c76315200953ed1075afe5fbe7ca3fd93",
+  "0011-logging-Allow-auditd-to-stat-dispatcher-executables.patch": "71fd417abf43ead32cb17d578a49175ddd7ec4c210ba63e633b19f82dc834176",
+  "0012-systemd-Revise-tmpfiles-factory-to-allow-writing-all.patch": "6b67854ffbb1a916dd24b566b0c49049b5f71a45387c5b64503d8789559466d6",
+  "0013-systemd-User-runtime-reads-user-cgroup-files.patch": "d7dff12facf1e9d0e382e586cd1e4d3d55dc965ef6d418e738b46788dc7f6d8b",
+  "0014-logging-Add-audit_control-for-journald.patch": "cb2be0e8642f36ffb47ab02a2746ddfa43c451f0eb0cfba1125d213279e737bf",
+  "0015-Temporary-fix-for-wrong-audit-log-directory.patch": "57362152e0c290b7ba46457fc3f6e16b793c78a26a9b68cc6d076a0b5ca24af0",
+  "0016-Set-default-login-to-unconfined_u.patch": "7683082b467b532f93bf7111715b23e11fe2bb3a95937aa53acf454367debae4"
  }
 }
