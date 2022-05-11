@@ -4,7 +4,7 @@
 Summary:        Kernel Audit Tool
 Name:           audit
 Version:        3.0
-Release:        9%{?dist}
+Release:        15%{?dist}
 Source0:        https://people.redhat.com/sgrubb/audit/%{name}-%{version}-alpha8.tar.gz
 Patch0:         refuse-manual-stop.patch
 License:        GPLv2+
@@ -15,7 +15,6 @@ Distribution:   Mariner
 BuildRequires:  krb5-devel
 BuildRequires:  openldap
 BuildRequires:  golang
-BuildRequires:  tcp_wrappers-devel
 BuildRequires:  libcap-ng-devel
 BuildRequires:  swig
 BuildRequires:  e2fsprogs-devel
@@ -23,7 +22,6 @@ BuildRequires:  systemd
 Requires:       systemd
 Requires:       krb5
 Requires:       openldap
-Requires:       tcp_wrappers
 Requires:       libcap-ng
 Requires:       gawk
 Requires:       audit-libs
@@ -86,7 +84,6 @@ and libauparse.
     --sysconfdir=%{_sysconfdir} \
     --with-python=yes \
     --with-python3=yes \
-    --with-libwrap \
     --enable-gssapi-krb5=yes \
     --with-libcap-ng=yes \
     --with-aarch64 \
@@ -104,9 +101,6 @@ mkdir -p %{buildroot}/%{_var}/log
 mkdir -p %{buildroot}/%{_var}/spool/audit
 ln -sfv %{_var}/opt/audit/log %{buildroot}/%{_var}/log/audit
 make install DESTDIR=%{buildroot}
-
-install -vdm755 %{buildroot}%{_libdir}/systemd/system-preset
-echo "disable auditd.service" > %{buildroot}%{_libdir}/systemd/system-preset/50-auditd.preset
 
 %check
 make %{?_smp_mflags} check
@@ -128,7 +122,6 @@ make %{?_smp_mflags} check
 %{_bindir}/*
 %{_sbindir}/*
 %{_libdir}/systemd/system/auditd.service
-%{_libdir}/systemd/system-preset/50-auditd.preset
 %{_libexecdir}/*
 %{_mandir}/man5/*
 %{_mandir}/man7/*
@@ -173,9 +166,21 @@ make %{?_smp_mflags} check
 %{python3_sitelib}/*
 
 %changelog
-* Tue Nov 02 2021 Thomas Crain <thcrain@microsoft.com> - 3.0-9
-- Increment release for force republishing using golang 1.16.9
+*   Fri Apr 29 2022 chalamalasetty <chalamalasetty@live.com> - 3.0-15
+-   Bumping 'Release' to rebuild with updated Golang version 1.16.15-2.
 
+*   Tue Mar 15 2022 Muhammad Falak <mwani@microsoft.com> - 3.0-14
+-   Bump release to force rebuild with golang 1.16.15
+*   Fri Feb 18 2022 Thomas Crain <thcrain@microsoft.com> - 3.0-13
+-   Bump release to force rebuild with golang 1.16.14
+*   Tue Feb 01 2022 Max Brodeur-Urbas <maxbr@microsoft.com> - 3.0-12
+-   chpebeni@microsoft.com, 3.0.6.2: Remove override so auditd starts by default.
+*   Fri Jan 21 2022 Nick Samson <nisamson@microsoft.com> - 3.0-11
+-   Removed libwrap support to remove dependency on finger
+*   Wed Jan 19 2022 Henry Li <lihl@microsoft.com> - 3.0-10
+-   Increment release for force republishing using golang 1.16.12
+*   Tue Nov 02 2021 Thomas Crain <thcrain@microsoft.com> - 3.0-9
+-   Increment release for force republishing using golang 1.16.9
 *   Fri Aug 06 2021 Nicolas Guibourge <nicolasg@microsoft.com> 3.0-8
 -   Increment release to force republishing using golang 1.16.7.
 *   Tue Jun 08 2021 Henry Beberman <henry.beberman@microsoft.com> 3.0-7

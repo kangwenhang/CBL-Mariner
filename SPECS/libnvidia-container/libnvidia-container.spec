@@ -1,10 +1,10 @@
-%define modprobe_version 450.57
+%define modprobe_version 495.44
 %define _major 1
 %define mod_probe_dir deps/src/nvidia-modprobe-%{modprobe_version}
 Summary:        NVIDIA container runtime library
 Name:           libnvidia-container
-Version:        1.5.1
-Release:        1%{?dist}
+Version:        1.9.0
+Release:        2%{?dist}
 License:        BSD AND ASL2.0 AND GPLv3+ AND LGPLv3+ AND MIT AND GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -21,6 +21,7 @@ BuildRequires:  libtirpc-devel
 BuildRequires:  make
 BuildRequires:  rpcsvc-proto
 BuildRequires:  which
+BuildRequires:  golang
 
 %description
 The nvidia-container library provides an interface to configure GNU/Linux
@@ -131,6 +132,13 @@ This package contains command-line tools that facilitate using the library.
 %{_bindir}/*
 
 %changelog
+* Fri Apr 29 2022 chalamalasetty <chalamalasetty@live.com> - 1.9.0-2
+- Bumping 'Release' to rebuild with updated Golang version 1.16.15-2.
+
+* Tue Mar 29 2022 Adithya Jayachandran <adjayach@microsoft.com> - 1.9.0-1
+- Updating to libnvidia-container to version 1.9.0
+- Bump nvidia-modprobe to version 495.44 as required
+
 * Mon Sep 27 2021 Adithya Jayachandran <adjayach@microsoft.com> - 1.5.1-1
 - Updating to libnvidia-container to version 1.5.1
 - Maintaining nvidia-modprobe to version 450.57 as required by container v1.5.1

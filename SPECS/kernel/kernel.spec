@@ -3,8 +3,8 @@
 %define uname_r %{version}-%{release}
 Summary:        Linux Kernel
 Name:           kernel
-Version:        5.10.78.1
-Release:        2%{?dist}
+Version:        5.10.111.1
+Release:        1%{?dist}
 License:        GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -15,9 +15,9 @@ Source0:        kernel-%{version}.tar.gz
 Source1:        config
 Source2:        config_aarch64
 Source3:        sha512hmac-openssl.sh
-Source4:        cbl-mariner-ca-20210127.pem
+Source4:        cbl-mariner-ca-20211013.pem
 Patch0:         0001-clocksource-drivers-hyper-v-Re-enable-VDSO_CLOCKMODE.patch
-Patch1:         0002-add-linux-syscall-license-info.patch
+Patch1:         0003-export-mmput_async.patch
 # Kernel CVEs are addressed by moving to a newer version of the stable kernel.
 # Since kernel CVEs are filed against the upstream kernel version and not the
 # stable kernel version, our automated tooling will still flag the CVE as not
@@ -221,6 +221,69 @@ Patch1182:      CVE-2021-43267.nopatch
 Patch1183:      CVE-2021-42739.nopatch
 Patch1184:      CVE-2021-42327.nopatch
 Patch1185:      CVE-2021-43389.nopatch
+Patch1186:      CVE-2021-43975.nopatch
+Patch1187:      CVE-2021-45480.nopatch
+Patch1188:      CVE-2021-45486.nopatch
+Patch1189:      CVE-2021-45485.nopatch
+Patch1190:      CVE-2021-44733.nopatch
+Patch1191:      CVE-2021-45469.nopatch
+Patch1192:      CVE-2021-28714.nopatch
+Patch1193:      CVE-2021-28715.nopatch
+Patch1194:      CVE-2021-46283.nopatch
+Patch1195:      CVE-2021-45095.nopatch
+Patch1196:      CVE-2022-0185.nopatch
+Patch1197:      CVE-2022-23222.nopatch
+Patch1198:      CVE-2021-4083.nopatch
+Patch1199:      CVE-2021-4154.nopatch
+Patch1200:      CVE-2021-4001.nopatch
+Patch1201:      CVE-2022-0487.nopatch
+Patch1202:      CVE-2021-3753.nopatch
+# CVE-2021-4032 - Introducing commit not in stable tree. No fix necessary at this time.
+Patch1203:      CVE-2021-4032.nopatch
+Patch1204:      CVE-2022-24448.nopatch
+Patch1205:      CVE-2022-24959.nopatch
+Patch1206:      CVE-2022-25258.nopatch
+Patch1207:      CVE-2022-25375.nopatch
+# CVE-2022-0264 - Introducing commit not in stable tree. No fix necessary at this time.
+Patch1208:      CVE-2022-0264.nopatch
+Patch1209:      CVE-2021-45402.nopatch
+Patch1210:      CVE-2021-3752.nopatch
+Patch1211:      CVE-2021-20322.nopatch
+Patch1212:      CVE-2021-43976.nopatch
+# CVE-2021-4090 - Introducing commit not in stable tree. No fix necessary at this time.
+Patch1213:      CVE-2021-4090.nopatch
+# CVE-2021-4093 - Introducing commit not in stable tree. No fix necessary at this time.
+Patch1214:      CVE-2021-4093.nopatch
+# CVE-2022-25265 - gcc versions < 7.X.X not supported.
+Patch1215:      CVE-2022-25265.nopatch
+# CVE-2021-20320 - s390 not supported.
+Patch1216:      CVE-2021-20320.nopatch
+Patch1217:      CVE-2021-20321.nopatch
+# CVE-2022-0382 - Introducing commit not in stable tree. No fix necessary at this time.
+Patch1218:      CVE-2022-0382.nopatch
+Patch1219:      CVE-2022-0617.nopatch
+Patch1220:      CVE-2022-0847.nopatch
+Patch1221:      CVE-2021-3656.nopatch
+Patch1222:      CVE-2021-3609.nopatch
+Patch1223:      CVE-2021-3744.nopatch
+Patch1224:      CVE-2021-3640.nopatch
+Patch1225:      CVE-2021-3739.nopatch
+Patch1226:      CVE-2022-0492.nopatch
+Patch1227:      CVE-2022-0516.nopatch
+Patch1228:      CVE-2021-3732.nopatch
+# CVE-2022-0433 - Introducing commit not in stable tree. No fix necessary at this time.
+Patch1229:      CVE-2022-0433.nopatch
+# CVE-2021-4095 - Introducing commit not in stable tree. No fix necessary at this time.
+Patch1230:      CVE-2021-4095.nopatch
+Patch1231:      CVE-2022-24958.nopatch
+Patch1232:      CVE-2021-3772.nopatch
+Patch1233:      CVE-2021-4002.nopatch
+Patch1234:      CVE-2021-45868.nopatch
+Patch1235:      CVE-2022-26490.nopatch
+# CVE-2022-26878 - Introducing commit not in stable tree. No fix necessary at this time.
+Patch1236:      CVE-2022-26878.nopatch
+Patch1237:      CVE-2022-26966.nopatch
+Patch1238:      CVE-2022-27223.nopatch
 BuildRequires:  audit-devel
 BuildRequires:  bash
 BuildRequires:  bc
@@ -320,8 +383,9 @@ Group:          System Environment/Kernel
 This package contains common device tree blobs (dtb)
 
 %package -n bpftool
-Summary: Inspection and simple manipulation of eBPF programs and maps
 License: GPLv2
+Summary:        Inspection and simple manipulation of eBPF programs and maps
+
 
 %description -n bpftool
 This package contains the bpftool, which allows inspection and simple
@@ -347,6 +411,10 @@ arch="arm64"
 archdir="arm64"
 %endif
 
+# Add CBL-Mariner cert into kernel's trusted keyring
+cp %{SOURCE4} certs/mariner.pem
+sed -i 's#CONFIG_SYSTEM_TRUSTED_KEYS=""#CONFIG_SYSTEM_TRUSTED_KEYS="certs/mariner.pem"#' .config
+
 cp .config current_config
 sed -i 's/CONFIG_LOCALVERSION=""/CONFIG_LOCALVERSION="-%{release}"/' .config
 make LC_ALL=  ARCH=${arch} oldconfig
@@ -365,9 +433,6 @@ if [ -s config_diff ]; then
 #  (DISABLE THIS IF INTENTIONALLY UPDATING THE CONFIG FILE)
     exit 1
 fi
-
-# Add CBL-Mariner cert into kernel's trusted keyring
-cp %{SOURCE4} certs/mariner.pem
 
 make VERBOSE=1 KBUILD_BUILD_VERSION="1" KBUILD_BUILD_HOST="CBL-Mariner" ARCH=${arch} %{?_smp_mflags}
 make -C tools perf
@@ -570,8 +635,78 @@ ln -sf linux-%{uname_r}.cfg /boot/mariner.cfg
 %{_sbindir}/bpftool
 %{_sysconfdir}/bash_completion.d/bpftool
 
-
 %changelog
+* Tue Apr 19 2022 Rachel Menge <rachelmenge@microsoft.com> - 5.10.111.1-1
+- Update source to 5.10.111.1
+- Enable CONFIG_BPF_UNPRIV_DEFAULT_OFF
+- Address CVE-2021-4023, CVE-2021-4157, CVE-2022-0435, CVE-2022-0998
+  CVE-2022-28356, CVE-2022-28388, CVE-2022-28389, CVE-2022-28390, 
+  CVE-2021-4203, CVE-2022-0322, CVE-2022-27950, CVE-2021-4148, 
+  CVE-2021-4149, CVE-2022-28796, CVE-2022-29156, CVE-2021-4202,
+  CVE-2022-0500
+
+* Fri Apr 01 2022 Rachel Menge <rachelmenge@microsoft.com> - 5.10.109.1-2
+- Remove hardcoded mariner.pem from configs and instead insert during
+  the build phase
+- Address CVE-2022-1055, CVE-2022-27666, CVE-2022-0995, CVE-2021-44879
+
+* Tue Mar 29 2022 Max Brodeur-Urbas <maxbr@microsoft.com> - 5.10.109.1-1
+- Update source to 5.10.109.1
+- Remove CVE-2022-24958.patch and CVE-2022-1016.patch
+- Enable CONFIG_MITIGATE_SPECTRE_BRANCH_HISTORY
+- Address CVE-2021-3772, CVE-2021-4002, CVE-2021-45868, CVE-2022-26490,
+  CVE-2022-26878, CVE-2022-26966, CVE-2022-27223
+
+* Fri Mar 25 2022 Rachel Menge <rachelmenge@microsoft.com> - 5.10.102.1-3
+- Apply CVE-2022-1016.patch
+
+* Fri Mar 18 2022 Rachel Menge <rachelmenge@microsoft.com> - 5.10.102.1-2
+- Disable CONFIG_FW_LOADER_USER_HELPER_FALLBACK
+
+* Mon Feb 28 2022 Rachel Menge <rachelmenge@microsoft.com> - 5.10.102.1-1
+- Update source to 5.10.102.1
+- Apply CVE-2022-24958.patch
+- Remove CVE-2021-43976.patch and CVE-2022-0435.patch
+- Address CVE-2021-3753, CVE-2021-4032, CVE-2022-24448, CVE-2022-24959,
+  CVE-2022-25258, CVE-2022-25375, CVE-2022-0264, CVE-2021-45402,
+  CVE-2021-3752, CVE-2021-20322, CVE-2021-4090, CVE-2021-4093,
+  CVE-2022-25265, CVE-2021-20320, CVE-2021-20321, CVE-2022-0382,
+  CVE-2022-0617, CVE-2022-0847, CVE-2021-3656, CVE-2021-3609,
+  CVE-2021-3744, CVE-2021-3640, CVE-2021-3739, CVE-2022-0492,
+  CVE-2022-0516, CVE-2021-3732, CVE-2022-0433, CVE-2021-4095
+
+* Fri Feb 11 2022 Vince Perri <viperri@microsoft.com> - 5.10.93.1-4
+- Add compressed firmware support
+
+* Wed Feb 09 2022 Rachel Menge <rachelmenge@microsoft.com> - 5.10.93.1-3
+- Address CVE-2022-0435 with patch
+
+* Thu Jan 27 2022 Rachel Menge <rachelmenge@microsoft.com> - 5.10.93.1-2
+- Address CVE-2021-4083
+
+* Mon Jan 24 2022 Rachel Menge <rachelmenge@microsoft.com> - 5.10.93.1-1
+- Update source to 5.10.93.1
+- Address CVE-2021-46283, CVE-2021-45095, CVE-2022-0185, CVE-2022-23222
+
+* Thu Jan 20 2022 Chris Co <chrco@microsoft.com> - 5.10.89.1-2
+- Rotate Mariner cert 
+
+* Sun Jan 16 2022 Rachel Menge <rachelmenge@microsoft.com> - 5.10.89.1-1
+- Update source to 5.10.89.1
+- Address CVE-2021-44733, CVE-2021-45469, CVE-2021-28714, CVE-2021-28715
+- Remove patch add-linux-syscall-license-info.patch
+
+* Fri Jan 14 2022 Henry Li <lihl@microsoft.com> - 5.10.88.1-3
+- Add patch to export mmput_async
+
+* Wed Jan 12 2022 Cameron Baird <cameronbaird@microsoft.com> - 5.10.88.1-2
+- Addressed CVE-2021-45485
+
+* Mon Jan 03 2022 Cameron Baird <cameronbaird@microsoft.com> - 5.10.88.1-1
+- Update Kernel source to 5.10.88.1
+- Addressed CVE-2021-43975, CVE-2021-45480, CVE-2021-45486
+- Patch for CVE-2021-43976
+
 * Mon Nov 29 2021 Suresh Babu Chalamalasetty <schalam@microsoft.com> - 5.10.78.1-2
 - Enable CONFIG_COMPAT kernel configs
 

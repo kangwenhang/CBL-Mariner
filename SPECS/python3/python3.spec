@@ -2,8 +2,8 @@
 %global __brp_python_bytecompile %{nil}
 Summary:        A high-level scripting language
 Name:           python3
-Version:        3.7.10
-Release:        5%{?dist}
+Version:        3.7.11
+Release:        1%{?dist}
 License:        PSF
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -14,6 +14,8 @@ Patch0:         cgi3.patch
 Patch1:         python3-support-mariner-platform.patch
 Patch2:         Replace-unsupported-TLS-methods.patch
 Patch3:         fix_broken_mariner_ssl_tests.patch
+# Upstream patch to fix XML tests with expat >= 2.4.5
+Patch5:         fix-xml-tests-expat.patch
 BuildRequires:  bzip2-devel
 BuildRequires:  expat-devel >= 2.1.0
 BuildRequires:  libffi-devel >= 3.0.13
@@ -274,6 +276,15 @@ make  %{?_smp_mflags} test
 %{_libdir}/python3.7/test/*
 
 %changelog
+* Mon Mar 21 2022 Andrew Phelps <anphel@microsoft.com> - 3.7.11-1
+- Upgrade to 3.7.11 to fix CVE-2021-3737
+
+* Tue Mar 01 2022 Thomas Crain <thcrain@microsoft.com> - 3.7.10-7
+- Add patch to fix tests with expat >= 2.4.5
+
+* Fri Feb 18 2022 Cameron Baird <cameronbaird@microsoft.com> - 3.7.10-6
+- Patch CVE-2022-0391
+
 * Mon Aug 30 2021 Bala <balakumaran.kannan@microsoft.com> - 3.7.10-5
 - Add explicit provides for pathfix.py
 - Add version for provides

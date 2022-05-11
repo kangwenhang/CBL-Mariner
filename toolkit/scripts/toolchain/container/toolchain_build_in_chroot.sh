@@ -57,16 +57,14 @@ set -e
 #
 cd /sources
 
-echo Linux-5.10.78.1 API Headers
-tar xf kernel-5.10.78.1.tar.gz
-cp /tools/0002-add-linux-syscall-license-info.patch CBL-Mariner-Linux-Kernel-rolling-lts-mariner-5.10.78.1/
-pushd CBL-Mariner-Linux-Kernel-rolling-lts-mariner-5.10.78.1
-patch -p1 -i 0002-add-linux-syscall-license-info.patch
+echo Linux-5.10.111.1 API Headers
+tar xf kernel-5.10.111.1.tar.gz
+pushd CBL-Mariner-Linux-Kernel-rolling-lts-mariner-5.10.111.1
 make mrproper
 make headers
 cp -rv usr/include/* /usr/include
 popd
-rm -rf CBL-Mariner-Linux-Kernel-rolling-lts-mariner-5.10.78.1
+rm -rf CBL-Mariner-Linux-Kernel-rolling-lts-mariner-5.10.111.1
 touch /logs/status_kernel_headers_complete
 
 echo 6.8. Man-pages-5.02
@@ -240,6 +238,7 @@ touch /logs/status_m4_complete
 echo Binutils-2.36.1
 tar xf binutils-2.36.1.tar.xz
 pushd binutils-2.36.1
+patch -Np1 -i /tools/CVE-2021-45078.patch
 sed -i '/@\tincremental_copy/d' gold/testsuite/Makefile.in
 mkdir -v build
 cd build
@@ -583,17 +582,17 @@ popd
 rm -rf gperf-3.1
 touch /logs/status_gperf_complete
 
-echo Expat-2.2.6
-tar xf expat-2.2.6.tar.bz2
-pushd expat-2.2.6
+echo Expat-2.4.1
+tar xf expat-2.4.1.tar.bz2
+pushd expat-2.4.1
 sed -i 's|usr/bin/env |bin/|' run.sh.in
 ./configure --prefix=/usr    \
             --disable-static \
-            --docdir=/usr/share/doc/expat-2.2.6
+            --docdir=/usr/share/doc/expat-2.4.1
 make -j$(nproc)
 make install
 popd
-rm -rf expat-2.2.6
+rm -rf expat-2.4.1
 touch /logs/status_expat_complete
 
 echo Perl-5.30.3
@@ -773,9 +772,9 @@ popd
 rm -rf openssl-1.1.1g
 touch /logs/status_openssl_complete
 
-echo Python-3.7.10
-tar xf Python-3.7.10.tar.xz
-pushd Python-3.7.10
+echo Python-3.7.11
+tar xf Python-3.7.11.tar.xz
+pushd Python-3.7.11
 ./configure --prefix=/usr       \
             --enable-shared     \
             --with-system-expat \
@@ -787,7 +786,7 @@ chmod -v 755 /usr/lib/libpython3.7m.so
 chmod -v 755 /usr/lib/libpython3.so
 ln -sfv pip3.7 /usr/bin/pip3
 popd
-rm -rf Python-3.7.10
+rm -rf Python-3.7.11
 touch /logs/status_python3710_complete
 
 echo Coreutils-8.30
@@ -1018,9 +1017,9 @@ popd
 rm -rf sqlite-autoconf-3320100
 touch /logs/status_sqlite-autoconf_complete
 
-echo nspr-4.21
-tar xf nspr-4.21.tar.gz
-pushd nspr-4.21
+echo nspr-4.33
+tar xf nspr-4.33.tar.gz
+pushd nspr-4.33
 cd nspr
 sed -ri 's#^(RELEASE_BINS =).*#\1#' pr/src/misc/Makefile.in
 sed -i 's#$(LIBRARY) ##'            config/rules.mk
@@ -1031,7 +1030,7 @@ sed -i 's#$(LIBRARY) ##'            config/rules.mk
 make -j$(nproc)
 make install
 popd
-rm -rf nspr-4.21
+rm -rf nspr-4.33
 touch /logs/status_nspr_complete
 
 echo popt-1.16
@@ -1068,12 +1067,11 @@ popd
 rm -rf db-5.3.28
 touch /logs/status_libdb_complete
 
-echo nss-3.44
-tar xf nss-3.44.tar.gz
-pushd nss-3.44
-patch -Np1 -i ../nss-3.44-standalone-1.patch
+echo nss-3.73
+tar xf nss-3.73.tar.gz
+pushd nss-3.73
+patch -Np1 -i ../nss-3.73-standalone-1.patch
 cd nss
-export NSS_DISABLE_GTESTS=1
 # Build with single processor due to errors seen with parallel make
 make -j1 BUILD_OPT=1                    \
     NSPR_INCLUDE_DIR=/usr/include/nspr  \
@@ -1081,6 +1079,7 @@ make -j1 BUILD_OPT=1                    \
     ZLIB_LIBS=-lz                       \
     NSS_ENABLE_WERROR=0                 \
     USE_64=1                            \
+    NSS_DISABLE_GTESTS=1                \
     $([ -f /usr/include/sqlite3.h ] && echo NSS_USE_SYSTEM_SQLITE=1)
 cd ../dist
 install -v -m755 Linux*/lib/*.so              /usr/lib
@@ -1091,7 +1090,7 @@ chmod -v 644                                  /usr/include/nss/*
 install -v -m755 Linux*/bin/{certutil,nss-config,pk12util} /usr/bin
 install -v -m644 Linux*/lib/pkgconfig/nss.pc  /usr/lib/pkgconfig
 popd
-rm -rf nss-3.44
+rm -rf nss-3.73
 touch /logs/status_nss_complete
 
 echo cpio-2.13

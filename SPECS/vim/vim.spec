@@ -1,16 +1,14 @@
 %define debug_package %{nil}
 Summary:        Text editor
 Name:           vim
-Version:        8.2.3668
-Release:        3%{?dist}
+Version:        8.2.4774
+Release:        1%{?dist}
 License:        Vim
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 Group:          Applications/Editors
 URL:            https://www.vim.org
 Source0:        https://github.com/%{name}/%{name}/archive/v%{version}.tar.gz#/%{name}-%{version}.tar.gz
-Patch0:         CVE-2021-4019.patch
-Patch1:         CVE-2021-4069.patch
 BuildRequires:  ncurses-devel
 
 %description
@@ -192,6 +190,46 @@ fi
 %{_bindir}/vimdiff
 
 %changelog
+* Fri Apr 29 2022 Suresh Babu Chalamalasetty <schalam@microsoft.com> - 8.2.4774-1
+- Update version to 8.2.4774 to fix CVE-2022-1420.
+
+* Wed Apr 27 2022 Suresh Babu Chalamalasetty <schalam@microsoft.com> - 8.2.4763-1
+- Update version to 8.2.4763 to fix CVE-2022-1381.
+
+* Thu Apr 07 2022 Nick Samson <nisamson@microsoft.com> - 8.2.4710-1
+- Update to 8.2.4710 to fix CVE-2022-1154
+
+* Thu Mar 24 2022 Andrew Phelps <anphel@microsoft.com> - 8.2.4563-1
+- Update version to 8.2.4563 to fix CVE-2022-0943
+
+* Wed Mar 02 2022 Nicolas Guibourge <nicolasg@microsoft.com> - 8.2.4495-1
+- Update version to 8.2.4495 to fix CVE-2022-0729
+
+* Mon Feb 21 2022 Thomas Crain <thcrain@microsoft.com> - 8.2.4432-1
+- Update version to 8.2.4432 to fix CVE-2022-0554
+
+* Mon Feb 07 2022 Max Brodeur-Urbas <maxbr@microsoft.com> - 8.2.4281-1
+- Update version to 8.2.4281 to fix CVE-2022-0443, CVE-2022-0417, CVE-2022-0413, 
+  CVE-2022-0408, CVE-2022-0407.
+
+* Thu Feb 03 2022 Chris Co <chrco@microsoft.com> - 8.2.4233-1
+- Update version to 8.2.4233 to fix CVE-2022-0392,CVE-2022-0393,CVE-2022-0359,CVE-2022-0361,CVE-2022-0368
+
+* Mon Jan 31 2022 Chris Co <chrco@microsoft.com> - 8.2.4151-1
+- Update version to 8.2.4151 to fix CVE-2022-0318.
+
+* Wed Jan 26 2022 Neha Agarwal <nehaagarwal@microsoft.com> - 8.2.4120-1
+- Update version to 8.2.4120 to fix CVE-2022-0261.
+
+* Thu Jan 13 2022 Rachel Menge <rachelmenge@microsoft.com> - 8.2.4081-1
+- Update version to 8.2.4081 to fix CVE-2022-0128.
+
+* Thu Jan 06 2022 Suresh Babu Chalamalasetty <schalam@microsoft.com> - 8.2.4006-1
+- Update version to 8.2.4006 to fix CVE CVE-2021-4166.
+
+* Tue Dec 28 2021 Henry Beberman <henry.beberman@microsoft.com> - 8.2.3668-4
+- Backported patch for CVE-2021-4136 from upstream
+
 * Wed Dec 08 2021 Mariner Autopatcher <cblmargh@microsoft.com> - 8.2.3668-3
 - Added patch file(s) CVE-2021-4069.patch
 

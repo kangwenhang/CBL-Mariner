@@ -3,36 +3,38 @@
 %define monolithic n
 %define policy_name targeted
 %define refpolicy_major 2
-%define refpolicy_minor 20210203
-%define POLICYCOREUTILSVER 2.9
-%define CHECKPOLICYVER 2.9
+%define refpolicy_minor 20220106
+%define POLICYCOREUTILSVER 3.2
+%define CHECKPOLICYVER 3.2
 Summary:        SELinux policy
 Name:           selinux-policy
 Version:        %{refpolicy_major}.%{refpolicy_minor}
-Release:        1%{?dist}
+Release:        4%{?dist}
 License:        GPLv2
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
 URL:            https://github.com/SELinuxProject/refpolicy
 Source0:        %{url}/releases/download/RELEASE_${refpolicy_major}_${refpolicy_minor}/refpolicy-%{version}.tar.bz2
 Source1:        Makefile.devel
-Patch0:         0001-various-systemd-user-fixes-and-additional-support.patch
-Patch1:         0002-Allow-use-of-systemd-UNIX-sockets-created-at-initrd-.patch
-Patch2:         0003-files-init-systemd-various-fixes.patch
-Patch3:         0004-Enable-factory-directory-support-in-systemd-tmpfiles.patch
-Patch4:         0005-Makefile-Revise-relabel-targets-to-relabel-all-secla.patch
-Patch5:         0006-cronyd-Add-dac_read_search.patch
-Patch6:         0007-systemd-ssh-ntp-Read-fips_enabled-crypto-sysctl.patch
-Patch7:         0008-udev-Manage-EFI-variables.patch
-Patch8:         0009-ntp-Handle-symlink-to-drift-directory.patch
-Patch9:         0010-systemd-Unit-generator-fixes.patch
-Patch10:        0011-logging-Allow-auditd-to-stat-dispatcher-executables.patch
-Patch11:        0012-systemd-Revise-tmpfiles-factory-to-allow-writing-all.patch
-Patch12:        0013-systemd-User-runtime-reads-user-cgroup-files.patch
-Patch13:        0014-logging-Add-audit_control-for-journald.patch
-Patch14:        0015-Temporary-fix-for-wrong-audit-log-directory.patch
-Patch15:        0016-Set-default-login-to-unconfined_u.patch
-Patch16:        0017-Drop-use-of-nonexistant-cli-options-in-Mariner-1.0.patch
+Source2:        booleans_targeted.conf
+Source3:        modules_targeted.conf
+Patch1:         0001-Makefile-Revise-relabel-targets-to-relabel-all-secla.patch
+Patch2:         0002-cronyd-Add-dac_read_search.patch
+Patch3:         0003-Temporary-fix-for-wrong-audit-log-directory.patch
+Patch4:         0004-Set-default-login-to-unconfined_u.patch
+Patch5:         0005-systemd-Add-systemd-homed-and-systemd-userdbd.patch
+Patch6:         0006-systemd-ssh-Crypto-sysctl-use.patch
+Patch7:         0007-systemd-Additional-fixes-for-fs-getattrs.patch
+Patch8:         0008-systemd-Updates-for-generators-and-kmod-static-nodes.patch
+Patch9:         0009-Add-containers-policy.patch
+Patch10:        0010-domain-Allow-lockdown-for-all-domains.patch
+Patch11:        0011-systemd-Drop-systemd_detect_virt_t.patch
+Patch12:        0012-fstools-Handle-resizes-of-the-root-filesystem.patch
+Patch13:        0013-mount-Get-the-attributes-of-all-filesystems.patch
+Patch14:        0014-systemd-Misc-updates.patch
+Patch15:        0015-rpm-Add-dnf-and-tdnf-labeling.patch
+Patch16:        0016-logging-Change-to-systemd-interface-for-tmpfilesd.patch
+Patch17:        0017-Add-cloud-init.patch
 BuildRequires:  bzip2
 BuildRequires:  checkpolicy >= %{CHECKPOLICYVER}
 BuildRequires:  m4
@@ -41,6 +43,8 @@ BuildRequires:  python3
 BuildRequires:  python3-xml
 Requires(pre):  coreutils
 Requires(pre):  policycoreutils >= %{POLICYCOREUTILSVER}
+Provides:       selinux-policy-base
+Provides:       selinux-policy-targeted
 BuildArch:      noarch
 
 %description
@@ -51,6 +55,7 @@ enforced by the kernel when running with SELinux enabled.
 %license COPYING
 %dir %{_usr}/share/selinux
 %dir %{_usr}/share/selinux/packages
+%dir %{_sysconfdir}/selinux
 %ghost %config(noreplace) %{_sysconfdir}/selinux/config
 %ghost %{_sysconfdir}/sysconfig/selinux
 %{_datadir}/selinux/%{policy_name}
@@ -102,12 +107,25 @@ enforced by the kernel when running with SELinux enabled.
 %{_sharedstatedir}/selinux/%{policy_name}/active/homedir_template
 %{_sharedstatedir}/selinux/%{policy_name}/active/seusers
 %{_sharedstatedir}/selinux/%{policy_name}/active/file_contexts
-%{_sharedstatedir}/selinux/%{policy_name}/active/policy.kern
-%ghost %{_sharedstatedir}/selinux/%{policy_name}/active/policy.linked
-%ghost %{_sharedstatedir}/selinux/%{policy_name}/active/seusers.linked
-%ghost %{_sharedstatedir}/selinux/%{policy_name}/active/users_extra.linked
+%exclude %{_sharedstatedir}/selinux/%{policy_name}/active/policy.kern
+%exclude %{_sharedstatedir}/selinux/%{policy_name}/active/policy.linked
+%exclude %{_sharedstatedir}/selinux/%{policy_name}/active/seusers.linked
+%exclude %{_sharedstatedir}/selinux/%{policy_name}/active/users_extra.linked
 %verify(not md5 size mtime) %{_sharedstatedir}/selinux/%{policy_name}/active/file_contexts.homedirs
-%ghost %{_sharedstatedir}/selinux/%{policy_name}/active/modules/100/*
+%{_sharedstatedir}/selinux/%{policy_name}/active/modules/100/base
+
+%package modules
+Summary:        SELinux policy modules
+Requires:       selinux-policy = %{version}-%{release}
+Requires(pre):  selinux-policy = %{version}-%{release}
+
+%description modules
+Additional SELinux policy modules
+
+%files modules
+%{_sharedstatedir}/selinux/%{policy_name}/active/modules/100/*
+%exclude %{_sharedstatedir}/selinux/%{policy_name}/active/modules/100/base
+%exclude %{_sharedstatedir}/selinux/%{policy_name}/active/modules/disabled
 
 %package devel
 Summary:        SELinux policy devel
@@ -145,15 +163,26 @@ SELinux policy documentation package
 %{_mandir}/ru/*/*
 %doc %{_usr}/share/doc/%{name}
 
+%define common_makeopts DISTRO=%{distro} MONOLITHIC=%{monolithic} DESTDIR=%{buildroot} SYSTEMD=y DIRECT_INITRC=n MLS_CATS=1024 MCS_CATS=1024
+
 %define makeCmds() \
-%make_build UNK_PERMS=%{3} NAME=%{1} TYPE=%{2} DISTRO=%{distro} UBAC=n DIRECT_INITRC=n SYSTEMD=y MONOLITHIC=%{monolithic} MLS_CATS=1024 MCS_CATS=1024 bare \
-%make_build UNK_PERMS=%{3} NAME=%{1} TYPE=%{2} DISTRO=%{distro} UBAC=n DIRECT_INITRC=n SYSTEMD=y MONOLITHIC=%{monolithic} MLS_CATS=1024 MCS_CATS=1024 conf
+%make_build UNK_PERMS=%{4} NAME=%{1} TYPE=%{2} UBAC=%{3} %{common_makeopts} bare \
+install -m0644 %{_sourcedir}/modules_%{1}.conf policy/modules.conf \
+%make_build UNK_PERMS=%{4} NAME=%{1} TYPE=%{2} UBAC=%{3} %{common_makeopts} conf \
+install -m0644 %{_sourcedir}/booleans_%{1}.conf policy/booleans.conf
+
+# After all the modules are inserted into the module store, the non-base
+# modules are disabled so the selinux-policy package only has the base module.
+# The selinux-policy-modules RPM then drops the disable flags using %exclude
+# in the %files section so the entire policy is enabled when the
+# selinux-policy-modules RPM is installed.
 %define installCmds() \
-%make_build UNK_PERMS=%{3} NAME=%{1} TYPE=%{2} DISTRO=%{distro} UBAC=n DIRECT_INITRC=n SYSTEMD=y MONOLITHIC=%{monolithic} MLS_CATS=1024 MCS_CATS=1024 base.pp \
-%make_build validate UNK_PERMS=%{3} NAME=%{1} TYPE=%{2} DISTRO=%{distro} UBAC=n DIRECT_INITRC=n SYSTEMD=y MONOLITHIC=%{monolithic} MLS_CATS=1024 MCS_CATS=1024 modules \
-make UNK_PERMS=%{3} NAME=%{1} TYPE=%{2} DISTRO=%{distro} UBAC=n DIRECT_INITRC=n SYSTEMD=y MONOLITHIC=%{monolithic} DESTDIR=%{buildroot} MLS_CATS=1024 MCS_CATS=1024 install \
-make UNK_PERMS=%{3} NAME=%{1} TYPE=%{2} DISTRO=%{distro} UBAC=n DIRECT_INITRC=n SYSTEMD=y MONOLITHIC=%{monolithic} DESTDIR=%{buildroot} MLS_CATS=1024 MCS_CATS=1024 install-appconfig \
-make UNK_PERMS=%{3} NAME=%{1} TYPE=%{2} DISTRO=%{distro} UBAC=n DIRECT_INITRC=n SYSTEMD=y MONOLITHIC=%{monolithic} DESTDIR=%{buildroot} MLS_CATS=1024 MCS_CATS=1024 SEMODULE="semodule -p %{buildroot} -X 100 " load \
+%make_build UNK_PERMS=%{4} NAME=%{1} TYPE=%{2} UBAC=%{3} %{common_makeopts} base.pp \
+%make_build validate UNK_PERMS=%{4} NAME=%{1} TYPE=%{2} UBAC=%{3} %{common_makeopts} modules \
+make UNK_PERMS=%{4} NAME=%{1} TYPE=%{2} UBAC=%{3} %{common_makeopts} install \
+make UNK_PERMS=%{4} NAME=%{1} TYPE=%{2} UBAC=%{3} %{common_makeopts} install-appconfig \
+make UNK_PERMS=%{4} NAME=%{1} TYPE=%{2} UBAC=%{3} SEMODULE="semodule -p %{buildroot} -X 100 " load \
+semodule -p %{buildroot} -l | grep -v base | xargs semodule -p %{buildroot} -d \
 mkdir -p %{buildroot}/%{_sysconfdir}/selinux/%{1}/logins \
 touch %{buildroot}%{_sysconfdir}/selinux/%{1}/contexts/files/file_contexts.subs \
 install -m0644 config/appconfig-%{2}/securetty_types %{buildroot}%{_sysconfdir}/selinux/%{1}/contexts/securetty_types \
@@ -219,16 +248,16 @@ mkdir -p %{buildroot}%{_usr}/share/selinux/packages
 
 # Install devel
 make clean
-%makeCmds targeted mcs allow
-%installCmds targeted mcs allow
+%makeCmds targeted mcs n allow
+%installCmds targeted mcs n allow
 
 # remove leftovers when save-previous=true (semanage.conf) is used
 rm -rf %{buildroot}%{_sharedstatedir}/selinux/%{policy_name}/previous
 
 mkdir -p %{buildroot}%{_mandir}
 cp -R  man/* %{buildroot}%{_mandir}
-make UNK_PERMS=allow NAME=%{policy_name} TYPE=mcs DISTRO=%{distro} UBAC=n DIRECT_INITRC=n MONOLITHIC=%{monolithic} DESTDIR=%{buildroot} PKGNAME=%{name} MLS_CATS=1024 MCS_CATS=1024 install-docs
-make UNK_PERMS=allow NAME=%{policy_name} TYPE=mcs DISTRO=%{distro} UBAC=n DIRECT_INITRC=n MONOLITHIC=%{monolithic} DESTDIR=%{buildroot} PKGNAME=%{name} MLS_CATS=1024 MCS_CATS=1024 install-headers
+make UNK_PERMS=allow NAME=%{policy_name} TYPE=mcs UBAC=%{3} PKGNAME=%{name} %{common_makeopts} install-docs
+make UNK_PERMS=allow NAME=%{policy_name} TYPE=mcs UBAC=%{3} PKGNAME=%{name} %{common_makeopts} install-headers
 mkdir %{buildroot}%{_usr}/share/selinux/devel/
 mv %{buildroot}%{_usr}/share/selinux/%{policy_name}/include %{buildroot}%{_usr}/share/selinux/devel/include
 install -m 644 %{SOURCE1} %{buildroot}%{_usr}/share/selinux/devel/Makefile
@@ -259,6 +288,11 @@ fi
 %postInstall $1 %{policy_name}
 exit 0
 
+%post modules
+%{_sbindir}/semodule -B -n -s %{policy_name}
+[ "${SELINUXTYPE}" == "%{policy_name}" ] && selinuxenabled && load_policy
+exit 0
+
 %postun
 if [ $1 = 0 ]; then
      setenforce 0 2> /dev/null
@@ -277,6 +311,27 @@ exit 0
 selinuxenabled && semodule -nB
 exit 0
 %changelog
+* Wed Mar 30 2022 Max Brodeur-Urbas <maxbr@microsoft.com> - 2.20220106-4
+- chpebeni@microsoft.com, 2.20220106-3: Additional policy fixes for enforcing core images.
+
+* Thu Mar 24 2022 Max Brodeur-Urbas <maxbr@microsoft.com> - 2.20220106-3
+- chpebeni@microsoft.com, 2.20220106-2: Split policy modules to a subpackage. 
+  Keep core images supported by base module.
+  Update systemd-homed and systemd-userdbd patch to upstreamed version.
+  Backport containers policy..
+
+* Wed Feb 23 2022 Max Brodeur-Urbas <maxbr@microsoft.com> - 2.20220106-2
+- Bumping release number to force rebuild against new .so files
+  generated by selinux upgrade.
+
+* Mon Jan 10 2022 Chris PeBenito <chpebeni@microsoft.com> - 2.20220106-1
+- Update to version 2.20220106.
+- Fix setup process to apply patches.
+- Correct files listing to include the module store files.
+- Create a booleans.conf for the build process, to override upstream Boolean
+  default values.
+- Fix build to include systemd rules.
+
 * Tue Sep 07 2021 Chris PeBenito <chpebeni@microsoft.com> - 2.20210203-1
 - Update to newest refpolicy release.  Add policy changes to boot the system
   in enforcing.  Change policy name to targeted.  Remove unrelated changelog

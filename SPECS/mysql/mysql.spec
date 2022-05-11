@@ -1,6 +1,6 @@
 Summary:        MySQL.
 Name:           mysql
-Version:        8.0.27
+Version:        8.0.29
 Release:        1%{?dist}
 License:        GPLv2 with exceptions AND LGPLv2 AND BSD
 Vendor:         Microsoft Corporation
@@ -37,9 +37,12 @@ Development headers for developing applications linking to maridb
 %autosetup -p1
 
 %build
+# Disabling flaky 'invalid_metadata' test.
+sed -i "s/\(invalid_metadata\)/DISABLED_\1/" router/tests/component/test_routing_splicer.cc
+
 cmake . \
       -DCMAKE_INSTALL_PREFIX=%{_prefix}   \
-      -DWITH_BOOST=boost/boost_1_73_0 \
+      -DWITH_BOOST=boost/boost_1_77_0 \
       -DINSTALL_MANDIR=share/man \
       -DINSTALL_DOCDIR=share/doc \
       -DINSTALL_DOCREADMEDIR=share/doc \
@@ -84,8 +87,21 @@ sudo -u test %make_build CTEST_OUTPUT_ON_FAILURE=1 test
 %{_libdir}/*.a
 %{_includedir}/*
 %{_libdir}/pkgconfig/mysqlclient.pc
+%{_libdir}/private/icudt69l/brkitr/*.res
+%{_libdir}/private/icudt69l/brkitr/*.brk
+%{_libdir}/private/icudt69l/brkitr/*.dict
+%{_libdir}/private/icudt69l/unames.icu
 
 %changelog
+* Fri Apr 29 2022 Suresh Babu Chalamalasetty <schalam@microsoft.com> - 8.0.29-1
+- Upgrade to v8.0.29 to fix 8 CVEs.
+
+* Wed Jan 26 2022 Neha Agarwal <pawelwi@microsoft.com> - 8.0.28-1
+- Upgrade to v8.0.28 to fix 16 CVEs.
+
+* Tue Jan 18 2022 Pawel Winogrodzki <pawelwi@microsoft.com> - 8.0.27-2
+- Disabled flaky 'invalid_metadata' test.
+
 * Sat Oct 30 2021 Jon Slobodzian <joslobo@microsoft.com> - 8.0.27-1
 - Upgrade to 8.0.27 to fix 36 CVEs
 

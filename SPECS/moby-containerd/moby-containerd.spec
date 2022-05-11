@@ -2,8 +2,8 @@
 
 Summary: Industry-standard container runtime
 Name: moby-containerd
-Version: 1.4.4+azure
-Release: 5%{?dist}
+Version: 1.5.9+azure
+Release: 6%{?dist}
 License: ASL 2.0
 Group: Tools/Container
 
@@ -17,8 +17,9 @@ Source1: containerd.service
 Source2: containerd.toml
 Source3: NOTICE
 Source4: LICENSE
-Patch0:  CVE-2021-32760.patch
-Patch1:  CVE-2021-41103.patch
+
+Patch0:  CVE-2022-23648.patch
+
 URL: https://www.containerd.io
 Vendor: Microsoft Corporation
 Distribution: Mariner
@@ -70,9 +71,8 @@ used directly by developers or end-users.
 %define OUR_GOPATH %{_topdir}/.gopath
 
 %prep
-%setup -q -n %{name}-%{version} -c
-%patch0 -p1
-%patch1 -p1
+%autosetup -p1 -c -n %{name}-%{version}
+
 mkdir -p %{OUR_GOPATH}/src/github.com/containerd
 ln -sfT %{_topdir}/BUILD/%{name}-%{version} %{OUR_GOPATH}/src/github.com/containerd/containerd
 
@@ -134,9 +134,24 @@ fi
 %{_mandir}/*/*
 
 %changelog
+* Fri Apr 29 2022 chalamalasetty <chalamalasetty@live.com> - 1.5.9+azure-6
+- Bumping 'Release' to rebuild with updated Golang version 1.16.15-2.
+
+* Tue Mar 15 2022 Muhammad Falak <mwani@microsoft.com> - 1.5.9+azure-5
+- Bump release to force rebuild with golang 1.16.15
+
+* Thu Mar 03 2022 Anirudh Gopal <angop@microsoft.com> - 1.5.9+azure-4
+- Enable containerd service restart
+* Wed Mar 02 2022 Nicolas Guibourge <nicolasg@microsoft.com> - 1.5.9+azure-3
+- Fix CVE-2022-23648
+* Fri Feb 18 2022 Thomas Crain <thcrain@microsoft.com> - 1.5.9+azure-2
+- Bump release to force rebuild with golang 1.16.14
+* Wed Jan 19 2022 Henry Beberman <henry.beberman@microsoft.com> - 1.5.9+azure-1
+- Update to version 1.5.9+azure
+* Wed Jan 19 2022 Henry Li <lihl@microsoft.com> - 1.4.4+azure-6
+- Increment release for force republishing using golang 1.16.12
 * Tue Nov 02 2021 Thomas Crain <thcrain@microsoft.com> - 1.4.4+azure-5
 - Increment release for force republishing using golang 1.16.9
-
 * Mon Oct 04 2021 Henry Beberman <henry.beberman@microsoft.com> 1.4.4+azure-4
 - Patch CVE-2021-41103
 - Change config to noreplace

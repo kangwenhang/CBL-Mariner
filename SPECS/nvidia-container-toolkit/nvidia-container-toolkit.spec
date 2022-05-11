@@ -1,7 +1,7 @@
 %global debug_package %{nil}
 Summary:        NVIDIA container runtime hook
 Name:           nvidia-container-toolkit
-Version:        1.5.1
+Version:        1.9.0
 Release:        2%{?dist}
 License:        ALS2.0
 Vendor:         Microsoft Corporation
@@ -28,9 +28,12 @@ Source0:        %{name}-%{version}.tar.gz
 #         See: https://reproducible-builds.org/docs/archives/
 #       - For the value of "--mtime" use the date "2021-04-26 00:00Z" to simplify future updates.
 Source1:        %{name}-%{version}-vendor.tar.gz
-Patch0:         nvidia-container-toolkit-1.5.1.patch
+Patch0:         nvidia-container-toolkit-1.9.0.patch
 BuildRequires:  golang
-Provides:       nvidia-container-runtime-hook
+Obsoletes: nvidia-container-runtime <= 3.5.0-1, nvidia-container-runtime-hook
+Provides: nvidia-container-runtime
+Provides: nvidia-container-runtime-hook
+Requires: libnvidia-container-tools >= 1.9.0, libnvidia-container-tools < 2.0.0
 
 %description
 Provides a OCI hook to enable GPU support in containers.
@@ -41,10 +44,12 @@ tar -xvf %{SOURCE1}
 
 %build
 go build -ldflags "-s -w " -o "nvidia-container-toolkit" ./cmd/nvidia-container-toolkit
+go build -ldflags "-s -w " -o "nvidia-container-runtime" ./cmd/nvidia-container-runtime
 
 %install
 mkdir -p %{buildroot}%{_bindir}
 install -m 755 -t %{buildroot}%{_bindir} nvidia-container-toolkit
+install -m 755 -t %{buildroot}%{_bindir} nvidia-container-runtime
 
 cp config/config.toml.centos config.toml
 mkdir -p %{buildroot}%{_sysconfdir}/nvidia-container-runtime
@@ -65,11 +70,28 @@ rm -f %{_bindir}/nvidia-container-runtime-hook
 %files
 %license LICENSE
 %{_bindir}/nvidia-container-toolkit
+%{_bindir}/nvidia-container-runtime
 %config %{_sysconfdir}/nvidia-container-runtime/config.toml
 %{_libexecdir}/oci/hooks.d/oci-nvidia-hook
 %{_datadir}/containers/oci/hooks.d/oci-nvidia-hook.json
 
 %changelog
+* Fri Apr 29 2022 chalamalasetty <chalamalasetty@live.com> - 1.9.0-2
+- Bumping 'Release' to rebuild with updated Golang version 1.16.15-2.
+
+* Wed Mar 30 2022 Adithya Jayachandran <adjayach@microsoft.com> - 1.9.0-1
+- Update toolkit version to 1.9.0
+- NVIDIA unified release package
+
+* Tue Mar 15 2022 Muhammad Falak <mwani@microsoft.com> - 1.5.1-5
+- Bump release to force rebuild with golang 1.16.15
+
+* Fri Feb 18 2022 Thomas Crain <thcrain@microsoft.com> - 1.5.1-4
+- Bump release to force rebuild with golang 1.16.14
+
+* Wed Jan 19 2022 Henry Li <lihl@microsoft.com> - 1.5.1-3
+- Increment release for force republishing using golang 1.16.12
+
 * Tue Nov 02 2021 Thomas Crain <thcrain@microsoft.com> - 1.5.1-2
 - Increment release for force republishing using golang 1.16.9
 

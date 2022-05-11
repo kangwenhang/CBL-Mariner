@@ -6,7 +6,7 @@
 Summary:        GRand Unified Bootloader
 Name:           grub2
 Version:        2.06~rc1
-Release:        5%{?dist}
+Release:        8%{?dist}
 License:        GPLv3+
 Vendor:         Microsoft Corporation
 Distribution:   Mariner
@@ -46,6 +46,7 @@ Patch0156:      0156-efilinux-Fix-integer-overflows-in-grub_cmd_initrd.patch
 Patch0157:      0157-linuxefi-fail-kernel-validation-without-shim-protoco.patch
 # Fix to prevent user from overwriting signed grub binary using grub2-install
 Patch0166:      0166-grub-install-disable-support-for-EFI-platforms.patch
+Patch0167:      CVE-2021-3981.patch
 # Add nopatches for tooling
 Patch1000:      CVE-2021-3418.nopatch
 Patch1001:      CVE-2020-14372.nopatch
@@ -105,7 +106,7 @@ GRUB UEFI bootloader binaries
 
 %prep
 # Remove module_info.ld script due to error "grub2-install: error: Decompressor is too big"
-LDFLAGS="`echo " %{build_ldflags} " | sed 's#-Wl,-dT,/usr/src/mariner/BUILD/module_info.ld##'`"
+LDFLAGS="`echo " %{build_ldflags} " | sed 's#-Wl,-dT,%{_topdir}/BUILD/module_info.ld##'`"
 export LDFLAGS
 
 %autosetup -p1 -n grub-2.06-rc1
@@ -115,7 +116,7 @@ mv gnulib-%{gnulibversion} gnulib
 
 %build
 # Remove module_info.ld script due to error "grub2-install: error: Decompressor is too big"
-LDFLAGS="`echo " %{build_ldflags} " | sed 's#-Wl,-dT,/usr/src/mariner/BUILD/module_info.ld##'`"
+LDFLAGS="`echo " %{build_ldflags} " | sed 's#-Wl,-dT,%{_topdir}/BUILD/module_info.ld##'`"
 export LDFLAGS
 ./bootstrap --no-git --gnulib-srcdir=./gnulib
 %ifarch x86_64
@@ -277,6 +278,15 @@ cp $GRUB_MODULE_SOURCE $EFI_BOOT_DIR/$GRUB_MODULE_NAME
 %endif
 
 %changelog
+* Tue Apr 26 2022 Suresh Babu Chalamalasetty <schalam@microsoft.com> - 2.06~rc1-8
+- Fix CVE-2021-3981.
+
+* Thu Feb 17 2022 Andrew Phelps <anphel@microsoft.com> - 2.06~rc1-7
+- Use _topdir instead of hard-coded value /usr/src/mariner
+
+* Tue Feb 08 2022 Chris Co <chrco@microsoft.com> - 2.06~rc1-6
+- Bump release number to force binary signing with new secure boot key
+
 * Mon Sep 13 2021 Andrew Phelps <anphel@microsoft.com> - 2.06~rc1-5
 - Disable module_info.ld script due to issue with ELF metadata note
 

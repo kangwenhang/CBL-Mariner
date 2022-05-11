@@ -1,7 +1,7 @@
 Summary:       CBL-Mariner release files
 Name:          mariner-release
 Version:       1.0
-Release:       28%{?dist}
+Release:       39%{?dist}
 License:       MIT
 Group:         System Environment/Base
 URL:           https://aka.ms/cbl-mariner
@@ -36,7 +36,7 @@ cat > %{buildroot}/usr/lib/os-release << EOF
 NAME="Common Base Linux Mariner"
 VERSION="%{mariner_release_version}"
 ID=mariner
-VERSION_ID=$version_id
+VERSION_ID="$version_id"
 PRETTY_NAME="CBL-Mariner/Linux"
 ANSI_COLOR="1;34"
 HOME_URL="%{url}"
@@ -67,6 +67,28 @@ rm -rf $RPM_BUILD_ROOT
 %config(noreplace) /etc/issue.net
 
 %changelog
+*   Sat Apr 09 2022 Jon Slobodzian <joslobo@microsoft.com> - 1.0-39
+-   Updating version for April update.
+*   Wed Mar 30 2022 Jon Slobodzian <joslobo@microsoft.com> - 1.0-38
+-   Updating version for March update 3.
+*   Tue Mar 15 2022 Jon Slobodzian <joslobo@microsoft.com> - 1.0-37
+-   Updating version for March update 2.
+*   Sat Mar 05 2022 Jon Slobodzian <joslobo@microsoft.com> - 1.0-36
+-   Updating version for March update.
+*   Fri Feb 25 2022 Jon Slobodzian <joslobo@microsoft.com> - 1.0-35
+-   Updating version for February update 2.
+*   Thu Feb 24 2022 Pawel Winogrodzki <pawelwi@microsoft.com> - 1.0-34
+-   Surrounding 'VERSION_ID' inside 'os-release' with double quotes.
+*   Mon Feb 07 2022 Jon Slobodzian <joslobo@microsoft.com> - 1.0-33
+-   Updating version for February update.
+*   Wed Jan 26 2022 Jon Slobodzian <joslobo@microsoft.com> - 1.0-32
+-   Updating version for January update-2 (CVE-2022-0185 and CVE-2021-4034)
+*   Sat Jan 15 2022 Jon Slobodzian <joslobo@microsoft.com> - 1.0-31
+-   Updating version for January update.
+*   Wed Jan 12 2022 Jon Slobodzian <joslobo@microsoft.com> - 1.0-30
+-   Updating version for January update.
+*   Wed Dec 22 2021 Jon Slobodzian <joslobo@microsoft.com> - 1.0-29
+-   Updating version for December update.
 *   Thu Nov 25 2021 Jon Slobodzian <joslobo@microsoft.com> - 1.0-28
 -   Updating version for November update.
 *   Thu Nov 25 2021 Jon Slobodzian <joslobo@microsoft.com> - 1.0-27
